@@ -1,0 +1,136 @@
+<div class="container">
+    <!-- Chat Container -->
+    <div class="chat-container">
+      <div class="messages">
+        <!-- Loop through messages array to display each message -->
+        <div
+          *ngFor="let message of messages; let i = index"
+          [ngClass]="{
+            message: true,
+            sent: message.type === 'sent',
+            received: message.type === 'received',
+            'code-message': messageContainsCode(message),
+            'replying-to': replyingTo === message
+          }"
+        >
+          <!-- For received messages, display the avatar -->
+          <div *ngIf="message.type === 'received'" class="message-content">
+            <img src="assets/images/pvt_llm_logo.png" alt="Avatar" class="avatar" />
+            <div class="message-text">
+              <!-- Reply Button -->
+              <button
+                *ngIf="i > 0"
+                class="reply-button"
+                mat-icon-button
+                (click)="onReply(message)"
+                aria-label="Reply to message"
+              >
+                <mat-icon>reply</mat-icon>
+              </button>
+              <!-- Copy Icon Button -->
+              <button
+                *ngIf="message.copyable"
+                class="copy-message-button"
+                (click)="copyMessageContent(message)"
+                mat-icon-button
+                aria-label="Copy message"
+              >
+                <mat-icon>{{ message.copySuccess ? 'check' : 'content_copy' }}</mat-icon>
+              </button>
+              <!-- Handle HTML messages -->
+              <ng-container *ngIf="message.contentType === 'html'">
+                <div [innerHTML]="message.content"></div>
+              </ng-container>
+              <!-- Handle plain text messages -->
+              <ng-container *ngIf="message.contentType === 'text'">
+                <p>{{ message.content }}</p>
+              </ng-container>
+              <span class="time">{{ message.time }}</span>
+            </div>
+          </div>
+  
+          <!-- For sent messages -->
+          <div *ngIf="message.type === 'sent'" class="message-text">
+            <!-- Handle HTML messages -->
+            <ng-container *ngIf="message.contentType === 'html'">
+              <div [innerHTML]="message.content"></div>
+            </ng-container>
+            <!-- Handle plain text messages -->
+            <ng-container *ngIf="message.contentType === 'text'">
+              <p>{{ message.content }}</p>
+            </ng-container>
+            <ng-container *ngIf="message.fileName">
+              <p><strong>Attached file:</strong> {{ message.fileName }}</p>
+            </ng-container>
+            <span class="time">{{ message.time }}</span>
+          </div>
+        </div>
+  
+        <!-- Typing indicator -->
+        <div *ngIf="isTyping" class="message received">
+          <div class="message-content">
+            <img src="assets/images/pvt_llm_logo.png" alt="Avatar" class="avatar" />
+            <div class="message-text typing-message">
+              <div class="typing-indicator">
+                <div class="center-box">
+                  <!-- Animated Border Box -->
+                  <div class="animated-border-box-glow"></div>
+                  <div class="animated-border-box">
+                    <!-- Shine Effect Text -->
+                    <span class="typing-text">Pvt LLM is thinking</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+  
+      <!-- Chat input area -->
+      <div class="chat-input-container">
+        <!-- Display selected file name -->
+        <div *ngIf="selectedFile" class="selected-file-name">
+          <mat-icon>attachment</mat-icon>
+          <span class="file-name">Attached file:{{ selectedFile.name }}</span>
+          <button mat-icon-button (click)="removeSelectedFile()" aria-label="Remove attached file">
+            <mat-icon>close</mat-icon>
+          </button>
+        </div>
+  
+        <!-- Display replying to message -->
+        <div *ngIf="replyingTo" class="replying-to-indicator">
+          <span>Replying:</span>
+          <span class="replying-to-content">{{ getReplyingToContent(replyingTo) }}</span>
+          <button mat-icon-button (click)="cancelReply()" aria-label="Cancel reply">
+            <mat-icon>close</mat-icon>
+          </button>
+        </div>
+  
+        <div class="chat-input">
+          <!-- Attachment Icon -->
+          <button
+            class="attachment-button"
+            mat-icon-button
+            (click)="triggerFileInput()"
+          >
+            <mat-icon>attach_file</mat-icon>
+          </button>
+          <!-- Hidden File Input -->
+          <input type="file" #fileInput style="display: none;" (change)="onFileSelected($event)" />
+  
+          <!-- Message Input -->
+          <input
+            type="text"
+            placeholder="Type your message..."
+            [(ngModel)]="userMessage"
+            (keyup.enter)="sendMessage()"
+          />
+          <!-- Send Button -->
+          <button class="send-button" (click)="sendMessage()">
+            <mat-icon>send</mat-icon>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  

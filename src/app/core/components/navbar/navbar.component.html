@@ -1,0 +1,66 @@
+<!-- src/app/core/components/navbar/navbar.component.html -->
+
+<aside class="sidebar mat-elevation-z8" [class.collapsed]="isCollapsed">
+    <!-- Sidebar Content -->
+    <div class="sidebar-content">
+      <div class="logo">
+        <img class="nav-logo" [src]="logoImage" alt="SPA Chat Logo" />
+        <span class="logo-text" *ngIf="!isCollapsed">Pvt LLM</span>
+      </div>
+      <ul class="nav">
+        <!-- Navigation Items -->
+        <li class="nav-item" *ngFor="let item of navItems">
+          <a
+            class="nav-link"
+            [routerLink]="item.link"
+            routerLinkActive="active"
+            [routerLinkActiveOptions]="{ exact: true }"
+            matTooltip="{{ item.text }}"
+            matTooltipPosition="right"
+            [attr.aria-label]="item.text"
+          >
+            <mat-icon class="nav-icon">{{ item.icon }}</mat-icon>
+            <span class="nav-text" *ngIf="!isCollapsed">{{ item.text }}</span>
+          </a>
+        </li>
+  
+        <li class="nav-item">
+          <button
+            mat-icon-button
+            (click)="toggleTheme()"
+            class="nav-link"
+            matTooltip="Toggle Theme"
+            matTooltipPosition="right"
+            aria-label="Toggle Theme"
+          >
+            <mat-icon class="nav-icon">{{
+              isDarkTheme ? 'brightness_7' : 'brightness_2'
+            }}</mat-icon>
+            <!-- Display nav text only when not collapsed -->
+            <span class="nav-text" *ngIf="!isCollapsed">Toggle Theme</span>
+          </button>
+        </li>
+      </ul>
+    </div>
+  
+    <!-- Footer -->
+    <div class="sidebar-footer" *ngIf="!isCollapsed">
+      <img class="footer-image" [src]="footerLogoImage" alt="NSHealth Logo" />
+    </div>
+  </aside>
+  
+  <div
+    class="sidebar-toggle"
+    (click)="toggleSidebar()"
+    [attr.aria-expanded]="!isCollapsed"
+    [attr.aria-label]="isCollapsed ? 'Expand Sidebar' : 'Collapse Sidebar'"
+  >
+    <mat-icon class="toggle-icon">{{
+      isCollapsed ? 'chevron_right' : 'chevron_left'
+    }}</mat-icon>
+  </div>
+  
+  <div class="main-content">
+    <router-outlet></router-outlet>
+  </div>
+  

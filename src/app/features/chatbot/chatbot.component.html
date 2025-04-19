@@ -1,0 +1,138 @@
+<div class="container">
+    <!-- Chat Container -->
+    <div class="chat-container">
+      <div class="messages">
+        <!-- Loop through messages array to display each message -->
+        <div
+          *ngFor="let message of messages"
+          class="message-wrapper"
+          [ngClass]="{
+            'sent-wrapper': message.type === 'sent',
+            'received-wrapper': message.type === 'received'
+          }"
+        >
+          <!-- Message Bubble -->
+          <div
+            [ngClass]="{
+              message: true,
+              sent: message.type === 'sent',
+              received: message.type === 'received'
+            }"
+          >
+            <!-- For received messages -->
+            <div *ngIf="message.type === 'received'" class="message-content">
+              <img
+                src="assets/images/pvt_llm_logo.png"
+                alt="Avatar"
+                class="avatar"
+              />
+              <div class="message-text">
+                <ng-container *ngIf="message.contentType === 'text'">
+                  <p>{{ message.content }}</p>
+                </ng-container>
+                <ng-container *ngIf="message.contentType === 'image'">
+                  <img [src]="message.content" alt="Received Image" />
+                </ng-container>
+                <span class="time">{{ message.time }}</span>
+              </div>
+            </div>
+  
+            <!-- For sent messages -->
+            <div
+              *ngIf="message.type === 'sent'"
+              class="message-text sent-message"
+            >
+              <ng-container *ngIf="message.contentType === 'text'">
+                <p>{{ message.content }}</p>
+              </ng-container>
+              <ng-container *ngIf="message.contentType === 'image'">
+                <img [src]="message.content" alt="Sent Image" />
+              </ng-container>
+              <span class="time">{{ message.time }}</span>
+            </div>
+          </div>
+  
+          <!-- Buttons outside the message bubble -->
+          <ng-container *ngIf="message.buttons">
+            <div
+              class="button-group column"
+              [ngClass]="{
+                'sent-buttons': message.type === 'sent',
+                'received-buttons': message.type === 'received'
+              }"
+            >
+              <button
+                class="option-button glow-on-hover"
+                *ngFor="let btn of message.buttons"
+                (click)="onButtonClick(btn, message.buttonAction)"
+                [disabled]="selectionsCompleted"
+              >
+                {{ btn }}
+              </button>
+            </div>
+          </ng-container>
+        </div>
+  
+        <!-- Typing Indicator -->
+        <div *ngIf="isTyping" class="message-wrapper received-wrapper">
+          <div class="message received">
+            <div class="message-content typing-content">
+              <img
+                src="assets/images/pvt_llm_logo.png"
+                alt="Avatar"
+                class="avatar"
+              />
+              <div class="message-text typing-message">
+                <div class="typing-indicator">
+                  <div class="center-box">
+                    <!-- Animated Border Box -->
+                    <div class="animated-border-box-glow"></div>
+                    <div class="animated-border-box">
+                      <!-- Shine Effect Text -->
+                      <span class="typing-text">Pvt LLM is thinking</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+  
+      <!-- Chat input area -->
+      <div class="chat-input" *ngIf="showChatInput">
+        <input
+          type="text"
+          [placeholder]="
+            currentMode === 'chat' ? 'Type here...' : 'Ask for a graph...'
+          "
+          [(ngModel)]="userMessage"
+          (keyup.enter)="sendMessage()"
+        />
+        <button class="send-button" (click)="sendMessage()">
+          <mat-icon>send</mat-icon>
+        </button>
+      </div>
+    </div>
+  
+    <!-- Toggle Bar -->
+    <div class="toggle-bar">
+      <button
+        class="toggle-button"
+        [class.active]="currentMode === 'chat'"
+        (click)="switchMode('chat')"
+      >
+        <mat-icon>chat</mat-icon>
+        <span>Chat</span>
+      </button>
+      <button
+        class="toggle-button"
+        [class.active]="currentMode === 'visual'"
+        (click)="switchMode('visual')"
+      >
+        <mat-icon>bar_chart</mat-icon>
+        <span>Visual Analysis</span>
+      </button>
+    </div>
+  </div>
+  
